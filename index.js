@@ -12,10 +12,11 @@ app.use(express.json())
 app.use('/home',require('./routes/home'))
 
 
-
+// ALL AUTHENTICATION ENDPOINTS
 app.use('/api/auth',require('./routes/auth'))
 
-app.use('/api/v1/notes',require('./routes/notes-route'))
+// ALL NOTES REQUEST
+app.use('/api/notes',require('./routes/notes-route'))
 
 
 app.listen(port, () => {
