@@ -11,7 +11,9 @@ app.use(express.json())
 // Available Routes
 app.use('/home',require('./routes/home'))
 
-app.use('/api/auth/createuser',require('./routes/createuser'))
+
+
+app.use('/api/auth',require('./routes/auth'))
 
 app.use('/api/v1/notes',require('./routes/notes-route'))
 

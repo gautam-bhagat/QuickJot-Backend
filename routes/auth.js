@@ -1,6 +1,8 @@
 const express = require("express");
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+
+
 const router = express.Router();
 
 const User = require("../models/User");
@@ -11,7 +13,7 @@ const { body, validationResult } = require("express-validator");
 const JWT_SECRET = "QuickJot_NoteTakingApp";
 
 router.post(
-  "/",
+  "/createuser",
 //   parameters Validation
   [
     body("username").isLength({ min: 6 }),
@@ -56,9 +58,9 @@ router.post(
       
     //   Creating JsonWebToken
       const data ={
-        user : {
+        
             id : user.id
-        }
+        
       }
       const authtoken = jwt.sign(data, JWT_SECRET);
       
@@ -71,5 +73,50 @@ router.post(
     }
   }
 );
+
+
+router.post('/login',[
+  body("username").isLength({ min: 6 }),
+  body("password").exists(),
+],async (req,res)=>{
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {username , password} = req.body;
+    try {
+      
+
+      // Check if User Exists
+      let user = await User.findOne({username})
+      if(!user){
+        //if user not exists return
+        return res.status(400).json({message : "Please Login with correct Credentials"})
+      }
+
+      //Comparing password
+      let passwordMatches = await  bcrypt.compare(password,user.password);
+
+      //if password doesnt matches
+      if(!passwordMatches){
+        //if PASSWORD not  MATCHES
+        return res.status(400).json({message : "Please Login with correct Credentials"})
+      }
+
+
+      // aFTER SUCCESSFULL LOGIN
+      let data = {
+        id : user.id
+      }
+
+      const authtoken = jwt.sign(data,JWT_SECRET)
+      res.json({authtoken})
+
+    } catch (error) {
+      res.status(500).json(error)
+    }
+
+})
 
 module.exports = router;
