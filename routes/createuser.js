@@ -1,10 +1,14 @@
 const express = require("express");
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const router = express.Router();
 
 const User = require("../models/User");
 
 const { body, validationResult } = require("express-validator");
+
+
+const JWT_SECRET = "QuickJot_NoteTakingApp";
 
 router.post(
   "/",
@@ -49,8 +53,16 @@ router.post(
         email: req.body.email,
         password: secPass,
       });
-
-      res.json({ user });
+      
+    //   Creating JsonWebToken
+      const data ={
+        user : {
+            id : user.id
+        }
+      }
+      const authtoken = jwt.sign(data, JWT_SECRET);
+      
+      res.json({ authtoken });
 
     } catch (error) {
         //error if occurred
