@@ -12,6 +12,7 @@ const fetchuser = (req, res, next) => {
     req.userid = data.id;
     next();
   } catch (error) {
+    console.log(error)
     res.status(401).send({ error: "Unauthorized Access" });
   }
 };

@@ -14,6 +14,10 @@ const notesSchema = mongoose.Schema({
         type : String,
         default : 'General'
     },
+    user : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User'
+    },
     date_created :{
         type : Date,
         default :Date.now

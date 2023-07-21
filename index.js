@@ -16,7 +16,7 @@ app.use('/home',require('./routes/home'))
 app.use('/api/auth',require('./routes/auth'))
 
 // ALL NOTES REQUEST
-app.use('/api/notes',require('./routes/notes-route'))
+app.use('/api/notes',require('./routes/notes'))
 
 
 app.listen(port, () => {
