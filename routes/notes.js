@@ -21,9 +21,12 @@ notesrouter.post(
     }),
   ],
   async (req, res) => {
+
+    let success = false;
+
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
-      res.status(400).json({ error: validationErrors });
+      res.status(400).json({ success, error: validationErrors });
     }
 
     try {
@@ -39,8 +42,8 @@ notesrouter.post(
       });
 
       const saved = await note.save();
-
-      res.json(saved);
+      success = true
+      res.json({success, saved});
     } catch (error) {
       console.log(error);
       res.status(500).send("Internal Server Error");
@@ -49,8 +52,8 @@ notesrouter.post(
 );
 
 // ROUTE 3 : update an existing note
-notesrouter.put("/updatenote/:id", fetchuser, async (req, res) => {
-  const { title, description, tag } = req.body;
+notesrouter.put("/updatenote", fetchuser, async (req, res) => {
+  const { _id,title, description, tag } = req.body;
 
   //Creating newNote object
   let newNote = {};
@@ -65,43 +68,51 @@ notesrouter.put("/updatenote/:id", fetchuser, async (req, res) => {
     newNote.tag = tag;
   }
   //
-
+  let success = false
   //find the note to be updated
-  let note = await Notes.findById(req.params.id);
+  let note = await Notes.findById(_id);
 
   if (!note) {
-    return res.status(404).send("not found");
+    return res.status(404).json({success, "message" : "Not Found"});
   }
 
   if (note.user.toString() !== req.userid) {
-    return res.status(401).send("Unauthorized Access");
+    return res.status(401).json({success , message : "Unauthorized Access"});
   }
 
   note = await Notes.findByIdAndUpdate(
-    req.params.id,
+    _id,
     { $set: newNote },
     { new: true }
   );
-  res.json(note);
+
+  success = true
+
+  res.json({success, note});
 });
 
-notesrouter.delete("/deletenote/:id", fetchuser, async (req, res) => {
+
+//delete note
+notesrouter.delete("/deletenote", fetchuser, async (req, res) => {
   try {
-    let note = await Notes.findById(req.params.id);
+    let note = await Notes.findById(req.body.id);
+
+    success = false
 
     if (!note) {
-      return res.status(404).send("not found");
+      return res.status(404).json({success , message : "not found"});
     }
 
     if (note.user.toString() !== req.userid) {
-      return res.status(401).send("Unauthorized Access");
+      return res.status(401).json({success , message : "Unauthorized Access"});
     }
 
-    note = await Notes.findByIdAndDelete(req.params.id);
-    res.send({ Success: "Note has been deleted", note });
+    success = true
+    note = await Notes.findByIdAndDelete(req.body.id);
+    res.json({success , note});
   } catch (error) {
     console.log(error);
-    res.status(500).status("Internal Server Error");
+    res.status(500).json({success : false,message :"Internal Server Error"});
   }
 });
 

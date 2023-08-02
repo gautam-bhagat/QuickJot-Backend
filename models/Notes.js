@@ -12,7 +12,7 @@ const notesSchema = mongoose.Schema({
     },
     tag : {
         type : String,
-        default : 'General'
+        default : 'general'
     },
     user : {
         type : mongoose.Schema.Types.ObjectId,
