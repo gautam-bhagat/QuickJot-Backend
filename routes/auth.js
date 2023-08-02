@@ -24,7 +24,7 @@ const ifUserNotVerified = async  (user) =>{
     }).save();
   
   }
-  const url = `http://localhost:5000/api/auth/verify/${user._id}/${token.token}`;
+  const url = `https://dark-gold-caterpillar-veil.cyclic.cloud/api/auth/verify/${user._id}/${token.token}`;
   console.log(url)
 
   await sendEmail(user.email,'QuickJot - Verify Email',url)
